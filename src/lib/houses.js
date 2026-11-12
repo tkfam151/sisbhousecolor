@@ -148,7 +148,6 @@ export function HouseEmblem({ houseId, size = 48, className = '', title }) {
     height: size,
     draggable: false,
     decoding: 'async',
-    className: `inline-block aspect-square shrink-0 select-none rounded-full object-cover ${className}`,
-    style: { background: house.primary },
+    className: `inline-block aspect-square shrink-0 select-none rounded-full object-contain ${className}`,
   });
 }

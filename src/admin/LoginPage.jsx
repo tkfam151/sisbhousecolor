@@ -47,20 +47,20 @@ export default function LoginPage({ onLogin, notice }) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-navy px-4 py-8">
+    <div className="flex min-h-screen flex-col bg-paper px-4 py-8">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
-        <div className="mb-6 text-center text-white">
+        <div className="mb-6 text-center text-ink">
           <div className="mb-5 flex justify-center gap-2" aria-hidden="true">
             {HOUSES.map((h) => (
               <HouseEmblem key={h.id} houseId={h.id} size={52} />
             ))}
           </div>
-          <h1 className="font-display text-4xl font-extrabold uppercase tracking-wide">Staff Login</h1>
-          <p className="mt-1 text-sm text-white/60">SISB House Points</p>
+          <h1 className="font-display text-4xl font-bold tracking-tight">Staff Login</h1>
+          <p className="mt-1 text-[15px] text-mute">SISB House Points</p>
         </div>
 
         <div className="card overflow-hidden">
-          <div className="grid grid-cols-2 border-b border-stone-200" role="tablist" aria-label="Login type">
+          <div className="grid grid-cols-2 border-b border-neutral-200" role="tablist" aria-label="Login type">
             {[
               ['teacher', 'Teacher Login'],
               ['admin', 'Admin Login'],
@@ -74,7 +74,7 @@ export default function LoginPage({ onLogin, notice }) {
                 aria-controls="login-panel"
                 onClick={() => switchTab(key)}
                 className={`flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-semibold transition ${
-                  tab === key ? 'border-b-2 border-navy bg-white text-navy' : 'bg-stone-50 text-stone-500 hover:text-stone-800'
+                  tab === key ? 'border-b-2 border-ink bg-white text-ink' : 'bg-neutral-50 text-neutral-500 hover:text-neutral-800'
                 }`}
               >
                 {label}
@@ -103,7 +103,7 @@ export default function LoginPage({ onLogin, notice }) {
                 />
               </div>
             ) : (
-              <p className="text-sm text-stone-500">
+              <p className="text-sm text-neutral-500">
                 Enter the Super Admin or General Admin password.
               </p>
             )}
@@ -129,10 +129,10 @@ export default function LoginPage({ onLogin, notice }) {
         </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-          <a href="../" className="inline-flex items-center gap-1.5 text-sm font-medium text-white/70 hover:text-white">
+          <a href="../" className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline">
             <ArrowLeft className="h-4 w-4" /> Back to leaderboard
           </a>
-          <ModeBadge dark />
+          <ModeBadge />
         </div>
       </div>
     </div>

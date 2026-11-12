@@ -1,6 +1,6 @@
 import { HouseEmblem } from '../lib/houses.js';
 
-/** Announcement shown when a new award arrives (auto-dismissed by the parent). */
+/** Notification-style announcement for a new award (auto-dismissed by the parent). */
 export default function AwardToast({ toast, tv = false }) {
   if (!toast) return null;
   const { house, text, sub } = toast;
@@ -9,16 +9,15 @@ export default function AwardToast({ toast, tv = false }) {
       key={toast.id}
       role="status"
       aria-live="polite"
-      className={`pointer-events-none fixed left-1/2 z-[60] w-[min(92vw,56rem)] animate-toast-in ${tv ? 'top-8' : 'top-4'}`}
+      className={`pointer-events-none fixed left-1/2 z-[60] w-[min(92vw,52rem)] animate-toast-in ${tv ? 'top-8' : 'top-20'}`}
     >
-      <div className="flex items-center gap-4 overflow-hidden rounded-md bg-white shadow-xl" style={{ borderLeft: `12px solid ${house.primary}` }}>
-        <HouseEmblem houseId={house.id} size={tv ? 120 : 64} className="my-3 shrink-0" />
-        <div className="min-w-0 py-3 pr-4">
-          <p className={`font-display font-bold uppercase leading-tight ${tv ? 'text-5xl md:text-6xl' : 'text-2xl sm:text-3xl'}`} style={{ color: house.text }}>
-            {text}
-          </p>
-          {sub && <p className={`mt-1 truncate text-stone-600 ${tv ? 'text-2xl' : 'text-sm sm:text-base'}`}>{sub}</p>}
+      <div className={`glass flex items-center gap-4 rounded-[26px] shadow-float ring-1 ring-black/5 ${tv ? 'p-5' : 'p-3.5'}`}>
+        <HouseEmblem houseId={house.id} size={tv ? 112 : 56} className="shrink-0" />
+        <div className="min-w-0">
+          <p className={`font-display font-semibold leading-tight tracking-tight text-ink ${tv ? 'text-4xl md:text-5xl' : 'text-lg sm:text-xl'}`}>{text}</p>
+          {sub && <p className={`mt-0.5 truncate text-mute ${tv ? 'text-2xl' : 'text-sm sm:text-[15px]'}`}>{sub}</p>}
         </div>
+        <span className={`ml-auto mr-1 shrink-0 rounded-full ${tv ? 'h-4 w-4' : 'h-2.5 w-2.5'}`} style={{ background: house.primary }} aria-hidden="true" />
       </div>
     </div>
   );

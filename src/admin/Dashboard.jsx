@@ -108,24 +108,24 @@ export default function Dashboard({ session, onLogout, onSessionUpdate }) {
 
 
   return (
-    <div className="min-h-screen pb-16">
-      <header className="sticky top-0 z-30 bg-navy text-white">
+    <div className="min-h-screen bg-paper pb-16">
+      <header className="glass sticky top-0 z-30 border-b border-black/[0.06]">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wider text-white/50">SISB House Points</p>
-            <p className="truncate text-base font-bold sm:text-lg" data-testid="logged-in-as">
+            <p className="text-xs text-mute">SISB House Points</p>
+            <p className="truncate text-base font-semibold tracking-tight text-ink sm:text-lg" data-testid="logged-in-as">
               Logged in as: {headerLabel(session)}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <ModeBadge status={board.status} dark />
-            <a href="../" target="_blank" rel="noreferrer" className="btn px-3 py-2 text-white/80 hover:bg-white/10 hover:text-white">
+            <ModeBadge status={board.status} />
+            <a href="../" target="_blank" rel="noreferrer" className="btn-ghost px-3 py-2">
               <ExternalLink className="h-4 w-4" /> <span className="hidden sm:inline">Leaderboard</span>
             </a>
-            <a href="../?tv=1" target="_blank" rel="noreferrer" className="btn px-3 py-2 text-white/80 hover:bg-white/10 hover:text-white">
+            <a href="../?tv=1" target="_blank" rel="noreferrer" className="btn-ghost px-3 py-2">
               <MonitorPlay className="h-4 w-4" /> <span className="hidden sm:inline">TV Mode</span>
             </a>
-            <button type="button" onClick={() => onLogout()} className="btn bg-white px-3 py-2 text-navy hover:bg-stone-100">
+            <button type="button" onClick={() => onLogout()} className="btn-secondary px-4 py-2">
               <LogOut className="h-4 w-4" /> Log Out
             </button>
           </div>
@@ -141,7 +141,7 @@ export default function Dashboard({ session, onLogout, onSessionUpdate }) {
         )}
       </header>
 
-      <main className="mx-auto max-w-6xl space-y-5 px-4 py-5">
+      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">
         {board.error && <Alert tone="error">Could not load live data: {board.error.message}</Alert>}
 
         {isAdmin && (
@@ -156,7 +156,7 @@ export default function Dashboard({ session, onLogout, onSessionUpdate }) {
 
         {tabs.length > 1 && (
           <nav className="-mx-4 overflow-x-auto px-4" aria-label="Dashboard sections">
-            <div className="flex w-max gap-5 border-b border-stone-300" role="tablist">
+            <div className="flex w-max gap-0.5 rounded-full bg-black/[0.06] p-1" role="tablist">
               {tabs.map(({ id, label }) => (
                 <button
                   key={id}
@@ -164,8 +164,8 @@ export default function Dashboard({ session, onLogout, onSessionUpdate }) {
                   role="tab"
                   aria-selected={activeTab === id}
                   onClick={() => setTab(id)}
-                  className={`-mb-px whitespace-nowrap border-b-2 pb-2.5 pt-1 text-sm font-semibold transition-colors ${
-                    activeTab === id ? 'border-navy text-navy' : 'border-transparent text-stone-500 hover:text-stone-900'
+                  className={`whitespace-nowrap rounded-full px-4 py-1.5 text-[13px] font-medium transition ${
+                    activeTab === id ? 'bg-white text-ink shadow-[0_1px_3px_rgba(0,0,0,0.12)]' : 'text-ink/70 hover:text-ink'
                   }`}
                 >
                   {label}

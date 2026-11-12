@@ -72,7 +72,7 @@ export default function SecurityPanel({ superPassword, allowTeacherPasswordChang
       </SectionCard>
 
       <SectionCard title="Teacher Self-Service" icon={ShieldCheck} description="Control whether teachers may change their own passwords.">
-        <div className="rounded-md bg-stone-50 p-4 ring-1 ring-stone-200">
+        <div className="rounded-xl bg-neutral-50 p-4 ring-1 ring-neutral-200">
           <Toggle
             id="teacher-self-change"
             checked={allowTeacherPasswordChange}

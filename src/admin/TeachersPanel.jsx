@@ -136,7 +136,7 @@ function BulkImport({ superPassword, reload, onAuthError }) {
         aria-label="Teachers CSV"
       />
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm">
-        <p className="text-stone-500">
+        <p className="text-neutral-500">
           <span className="font-semibold text-emerald-700">{parsed.valid.length} valid</span>
           {parsed.errors.length > 0 && <span className="font-semibold text-red-700"> · {parsed.errors.length} with problems</span>}
         </p>
@@ -151,10 +151,10 @@ function BulkImport({ superPassword, reload, onAuthError }) {
       )}
       {results && (
         <div className="mt-4">
-          <p className="mb-2 text-sm font-semibold text-stone-700">
+          <p className="mb-2 text-sm font-semibold text-neutral-700">
             Import summary: <span className="text-emerald-700">{created} created</span>, <span className="text-red-700">{failed} failed</span>
           </p>
-          <ul className="max-h-72 divide-y divide-stone-100 overflow-y-auto rounded-md ring-1 ring-stone-200">
+          <ul className="max-h-72 divide-y divide-neutral-100 overflow-y-auto rounded-xl ring-1 ring-neutral-200">
             {results.map((r) => (
               <li key={`${r.line}-${r.username}`} className="flex items-start gap-2 px-3 py-2 text-sm">
                 {r.status === 'created' ? (
@@ -162,10 +162,10 @@ function BulkImport({ superPassword, reload, onAuthError }) {
                 ) : (
                   <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" aria-label="Error" />
                 )}
-                <span className="w-14 shrink-0 tabular-nums text-stone-500">Line {r.line}</span>
+                <span className="w-14 shrink-0 tabular-nums text-neutral-500">Line {r.line}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="font-medium text-stone-800">{r.full_name || r.raw || ''}</span>
-                  {r.username && <span className="text-stone-500"> ({r.username})</span>}
+                  <span className="font-medium text-neutral-800">{r.full_name || r.raw || ''}</span>
+                  {r.username && <span className="text-neutral-500"> ({r.username})</span>}
                   <span className={`block text-xs ${r.status === 'created' ? 'text-emerald-700' : 'text-red-700'}`}>{r.message}</span>
                 </span>
               </li>
@@ -198,19 +198,19 @@ function TeacherRow({ teacher, superPassword, reload, onAuthError, onMessage }) 
   };
 
   return (
-    <tr className="align-top hover:bg-stone-50">
-      <td className="px-3 py-2.5 font-semibold text-stone-900">{teacher.full_name}</td>
-      <td className="px-3 py-2.5 font-mono text-stone-700">{teacher.username}</td>
+    <tr className="align-top hover:bg-neutral-50">
+      <td className="px-3 py-2.5 font-semibold text-neutral-900">{teacher.full_name}</td>
+      <td className="px-3 py-2.5 font-mono text-neutral-700">{teacher.username}</td>
       <td className="px-3 py-2.5">
         <span
           className={`inline-flex rounded-full px-2 py-0.5 text-xs font-bold ring-1 ${
-            teacher.active ? 'bg-emerald-50 text-emerald-800 ring-emerald-200' : 'bg-stone-100 text-stone-600 ring-stone-300'
+            teacher.active ? 'bg-emerald-50 text-emerald-800 ring-emerald-200' : 'bg-neutral-100 text-neutral-600 ring-neutral-300'
           }`}
         >
           {teacher.active ? 'Active' : 'Inactive'}
         </span>
       </td>
-      <td className="whitespace-nowrap px-3 py-2.5 text-stone-600">{formatDate(teacher.created_at)}</td>
+      <td className="whitespace-nowrap px-3 py-2.5 text-neutral-600">{formatDate(teacher.created_at)}</td>
       <td className="px-3 py-2.5">
         <div className="flex flex-wrap justify-end gap-1.5">
           <button
@@ -279,7 +279,7 @@ export default function TeachersPanel({ superPassword, teachers, loading, reload
         actions={
           <label className="relative w-full sm:w-64">
             <span className="sr-only">Search teachers</span>
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <input className="input pl-9" placeholder="Search…" value={query} onChange={(e) => setQuery(e.target.value)} />
           </label>
         }
@@ -290,16 +290,16 @@ export default function TeachersPanel({ superPassword, teachers, loading, reload
           </Alert>
         )}
         {loading ? (
-          <p className="animate-pulse text-sm text-stone-500">Loading teachers…</p>
+          <p className="animate-pulse text-sm text-neutral-500">Loading teachers…</p>
         ) : filtered.length === 0 ? (
-          <p className="rounded-md bg-stone-50 p-6 text-center text-sm text-stone-500">
+          <p className="rounded-xl bg-neutral-50 p-6 text-center text-sm text-neutral-500">
             {teachers.length ? 'No teachers match your search.' : 'No teacher accounts yet — create one above.'}
           </p>
         ) : (
           <div className="-mx-4 overflow-x-auto sm:mx-0">
             <table className="w-full min-w-[42rem] text-sm">
               <thead>
-                <tr className="border-b border-stone-200 text-left text-xs uppercase tracking-wide text-stone-500">
+                <tr className="border-b border-neutral-200 text-left text-xs text-mute">
                   <th className="px-3 py-2 font-semibold">Full Name</th>
                   <th className="px-3 py-2 font-semibold">Username</th>
                   <th className="px-3 py-2 font-semibold">Status</th>
@@ -307,7 +307,7 @@ export default function TeachersPanel({ superPassword, teachers, loading, reload
                   <th className="px-3 py-2 text-right font-semibold">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-100">
+              <tbody className="divide-y divide-neutral-100">
                 {filtered.map((t) => (
                   <TeacherRow
                     key={t.id}

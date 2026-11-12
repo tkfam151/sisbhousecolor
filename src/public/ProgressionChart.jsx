@@ -187,7 +187,7 @@ export default function ProgressionChart({ logs }) {
         <h2 id="chart-title" className="section-title">
           Points over time
         </h2>
-        <div className="inline-flex rounded-md bg-stone-100 p-1 text-sm" role="group" aria-label="Chart range">
+        <div className="inline-flex rounded-xl bg-neutral-100 p-1 text-sm" role="group" aria-label="Chart range">
           {[
             ['days', `By day`],
             ['entries', `Last ${MAX_ENTRIES} awards`],
@@ -198,7 +198,7 @@ export default function ProgressionChart({ logs }) {
               onClick={() => setMode(key)}
               aria-pressed={mode === key}
               className={`rounded-lg px-3 py-1.5 font-semibold transition ${
-                mode === key ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-800'
+                mode === key ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'
               }`}
             >
               {label}
@@ -207,7 +207,7 @@ export default function ProgressionChart({ logs }) {
         </div>
       </div>
 
-      <ul className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-600" aria-label="Legend">
+      <ul className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-600" aria-label="Legend">
         {HOUSES.map((h) => (
           <li key={h.id} className="flex items-center gap-1.5">
             <svg width="26" height="12" aria-hidden="true">
@@ -221,7 +221,7 @@ export default function ProgressionChart({ logs }) {
 
       <div ref={wrapRef} className="relative w-full">
         {n === 0 ? (
-          <div className="flex h-60 items-center justify-center rounded-md bg-stone-50 text-sm text-stone-500">
+          <div className="flex h-60 items-center justify-center rounded-xl bg-neutral-50 text-sm text-neutral-500">
             The chart will appear once points are awarded this term.
           </div>
         ) : (
@@ -239,14 +239,14 @@ export default function ProgressionChart({ logs }) {
               {ticks.map((t) => (
                 <g key={t}>
                   <line x1={margin.left} x2={margin.left + innerW} y1={y(t)} y2={y(t)} stroke={t === 0 ? '#94A3B8' : '#E2E8F0'} strokeWidth={1} />
-                  <text x={margin.left - 8} y={y(t)} dy="0.32em" textAnchor="end" className="fill-stone-500 text-[11px] tabular-nums">
+                  <text x={margin.left - 8} y={y(t)} dy="0.32em" textAnchor="end" className="fill-neutral-500 text-[11px] tabular-nums">
                     {formatPoints(t)}
                   </text>
                 </g>
               ))}
               {data.labels.map((label, i) =>
                 i % labelEvery === 0 || i === n - 1 ? (
-                  <text key={`x${i}`} x={x(i)} y={height - 8} textAnchor="middle" className="fill-stone-500 text-[11px]">
+                  <text key={`x${i}`} x={x(i)} y={height - 8} textAnchor="middle" className="fill-neutral-500 text-[11px]">
                     {label}
                   </text>
                 ) : null,
@@ -275,7 +275,7 @@ export default function ProgressionChart({ logs }) {
                 );
               })}
               {endLabels.map((it) => (
-                <text key={it.house.id} x={x(n - 1) + 10} y={it.y} dy="0.32em" className="fill-stone-700 text-[11px] font-semibold">
+                <text key={it.house.id} x={x(n - 1) + 10} y={it.y} dy="0.32em" className="fill-neutral-700 text-[11px] font-semibold">
                   {width < 480 ? it.house.shortName.slice(0, 4) : it.house.shortName} {formatPoints(it.value)}
                 </text>
               ))}
@@ -283,22 +283,22 @@ export default function ProgressionChart({ logs }) {
 
             {hover !== null && (
               <div
-                className="pointer-events-none absolute top-2 z-10 w-56 rounded-md bg-white/95 p-3 text-xs shadow-xl ring-1 ring-stone-200 backdrop-blur"
+                className="pointer-events-none absolute top-2 z-10 w-56 rounded-xl bg-white/95 p-3 text-xs shadow-xl ring-1 ring-neutral-200 backdrop-blur"
                 style={{
                   left: Math.min(Math.max(8, x(hover) + 12), width - 232),
                 }}
               >
-                <p className="mb-1.5 font-semibold text-stone-900">{data.details[hover] || data.labels[hover]}</p>
+                <p className="mb-1.5 font-semibold text-neutral-900">{data.details[hover] || data.labels[hover]}</p>
                 <ul className="space-y-1">
                   {hoverItems.map(({ house, value }) => (
                     <li key={house.id} className="flex items-center justify-between gap-2">
-                      <span className="flex items-center gap-1.5 text-stone-700">
+                      <span className="flex items-center gap-1.5 text-neutral-700">
                         <svg width="12" height="12" aria-hidden="true">
                           <Marker shape={house.marker} x={6} y={6} color={house.primary} />
                         </svg>
                         {house.shortName}
                       </span>
-                      <span className="font-semibold tabular-nums text-stone-900">{formatPoints(value)}</span>
+                      <span className="font-semibold tabular-nums text-neutral-900">{formatPoints(value)}</span>
                     </li>
                   ))}
                 </ul>

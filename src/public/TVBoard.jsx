@@ -41,49 +41,49 @@ export default function TVBoard({ ranked, frozen, frozenAt, status, onExit }) {
     }
   };
 
-  const ctrl = 'btn border border-white/20 px-3 py-2 text-white/80 hover:bg-white/10 hover:text-white';
+  const ctrl = 'btn-secondary px-4 py-2 text-[13px]';
 
   return (
-    <div className="tv-bg flex min-h-screen flex-col gap-4 p-4 text-white md:h-screen md:gap-5 md:overflow-hidden md:p-6 xl:p-8">
-      <header className="flex flex-wrap items-end justify-between gap-3 border-b border-white/15 pb-3">
+    <div className="flex min-h-screen flex-col gap-5 bg-paper p-5 text-ink md:h-screen md:gap-6 md:overflow-hidden md:p-8 xl:p-10">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="font-display text-4xl font-extrabold uppercase leading-none tracking-wide md:text-6xl">SISB House Points</p>
-          <p className="mt-1 text-base text-white/50 md:text-xl">
-            {now.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })},{' '}
+          <p className="font-display text-4xl font-bold tracking-tight md:text-6xl">House Points</p>
+          <p className="mt-1 text-base text-mute md:text-xl">
+            {now.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })} ·{' '}
             {now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <ModeBadge status={status} dark className="mr-2" />
+          <ModeBadge status={status} className="mr-2" />
           <button type="button" onClick={toggleFullscreen} className={ctrl}>
             {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-            <span className="hidden sm:inline">{isFullscreen ? 'Exit full screen' : 'Full screen'}</span>
+            <span className="hidden sm:inline">{isFullscreen ? 'Exit Full Screen' : 'Full Screen'}</span>
           </button>
           <button type="button" onClick={onExit} className={ctrl}>
-            <X className="h-4 w-4" /> <span className="hidden sm:inline">Exit</span>
+            <X className="h-4 w-4" /> <span className="hidden sm:inline">Done</span>
           </button>
         </div>
       </header>
 
       {frozen && <FreezeBanner frozenAt={frozenAt} tv />}
 
-      <ol className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 md:min-h-0 md:grid-cols-5" aria-label="House standings">
+      <ol className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 md:min-h-0 md:grid-cols-5 md:gap-5" aria-label="House standings">
         {ranked.map((house) => {
-          const pct = max > 0 ? Math.max(3, (house.points / max) * 100) : 3;
+          const pct = max > 0 ? Math.max(0, (house.points / max) * 100) : 0;
           return (
-            <li key={house.id} className="relative flex min-h-[16rem] flex-col items-center overflow-hidden rounded-md bg-[#181c23] text-center md:min-h-0">
-              <div className="absolute inset-x-0 bottom-0 opacity-90 transition-[height] duration-1000 ease-out" style={{ height: `${pct}%`, background: house.primary }} aria-hidden="true" />
-              <div className="relative z-10 w-full py-2 font-display text-3xl font-extrabold uppercase xl:text-4xl" style={{ background: house.primary }}>
-                {ordinal(house.rank)}
+            <li key={house.id} className="flex min-h-[18rem] flex-col items-center rounded-[28px] bg-white px-5 shadow-card pb-6 pt-5 text-center md:min-h-0">
+              <span className="text-xl font-medium text-mute md:text-2xl">{ordinal(house.rank)}</span>
+              <div className="flex flex-1 flex-col items-center justify-center gap-4 py-3">
+                <HouseEmblem houseId={house.id} size={220} className="h-28 w-28 md:h-auto md:max-h-[24vh] md:w-full md:max-w-[200px]" />
+                <h2 className="font-display text-2xl font-semibold tracking-tight md:text-3xl xl:text-4xl">{house.name}</h2>
               </div>
-              <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-3 px-3 py-3">
-                <HouseEmblem houseId={house.id} size={220} className="h-28 w-28 md:h-auto md:max-h-[26vh] md:w-full md:max-w-[220px]" />
-                <h2 className="font-display text-3xl font-bold uppercase leading-none tracking-wide md:text-4xl xl:text-5xl">{house.name}</h2>
-              </div>
-              <p className="relative z-10 font-display text-7xl font-extrabold leading-none tabular-nums md:text-[clamp(3.5rem,6.5vw,9rem)]" aria-label={`${house.points} points`}>
+              <p className="font-display text-7xl font-bold leading-none tracking-tight tabular-nums md:text-[clamp(3.5rem,6vw,8rem)]" aria-label={`${house.points} points`}>
                 {formatPoints(house.points)}
               </p>
-              <p className="relative z-10 pb-4 text-lg font-semibold uppercase tracking-[0.2em] text-white/80">points</p>
+              <p className="mt-1 text-lg text-mute">points</p>
+              <div className="mt-5 h-1.5 w-full overflow-hidden rounded-full bg-black/[0.06]" aria-hidden="true">
+                <div className="h-full rounded-full transition-[width] duration-1000 ease-out" style={{ width: `${pct}%`, background: house.primary }} />
+              </div>
             </li>
           );
         })}

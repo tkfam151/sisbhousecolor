@@ -21,11 +21,11 @@ export default function FreezeControl({ auth, frozen, frozenAt, onAuthError, onC
   };
 
   return (
-    <section className={`rounded-md border ${frozen ? 'border-stone-900 border-l-8 border-l-amber-400 bg-stone-900 text-white' : 'border-stone-300 bg-white'}`}>
+    <section className={`card ${frozen ? 'ring-2 ring-[#FF9500]/60' : ''}`}>
       <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
         <div>
-          <h2 className={`section-title ${frozen ? '!text-white' : ''}`}>Mystery / Freeze Mode</h2>
-          <p className={`mt-0.5 text-sm ${frozen ? 'text-white/75' : 'text-stone-500'}`}>
+          <h2 className="section-title">Mystery / Freeze Mode</h2>
+          <p className={`mt-0.5 text-sm text-mute`}>
             {frozen
               ? `On. Public screens show scores from ${formatDateTime(frozenAt)}. New points stay hidden until you turn this off.`
               : 'Off. Turn on to freeze the public scores before a big reveal.'}
@@ -35,11 +35,11 @@ export default function FreezeControl({ auth, frozen, frozenAt, onAuthError, onC
           <Toggle
             id="freeze-toggle"
             size="lg"
-            onClass="bg-amber-500"
+            onClass="bg-[#FF9500]"
             checked={frozen}
             disabled={busy}
             onChange={toggle}
-            label={<span className={frozen ? 'text-white' : ''}>{busy ? 'Saving…' : frozen ? 'Frozen' : 'Live'}</span>}
+            label={busy ? 'Saving…' : frozen ? 'Frozen' : 'Live'}
           />
         </div>
       </div>

@@ -4,27 +4,28 @@
 
 @layer base {
   html { -webkit-tap-highlight-color: transparent; }
-  body { @apply bg-paper font-sans text-stone-900 antialiased; }
-  :focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+  body { @apply bg-paper font-sans text-ink antialiased; letter-spacing: -0.01em; }
+  :focus-visible { outline: 3px solid rgba(0, 113, 227, 0.45); outline-offset: 2px; }
 }
 
 @layer components {
-  .card { @apply rounded-md border border-stone-300 bg-white; }
+  .card { @apply rounded-card bg-white shadow-card; }
   .input {
-    @apply block w-full rounded-md border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 placeholder:text-stone-400 focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy disabled:bg-stone-50 disabled:text-stone-500;
+    @apply block w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-[17px] text-ink placeholder:text-neutral-400 transition focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/20 disabled:bg-paper disabled:text-mute;
   }
-  .label { @apply mb-1.5 block text-sm font-semibold text-stone-700; }
+  .label { @apply mb-1.5 block text-[13px] font-medium text-mute; }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full px-5 py-2.5 text-[15px] font-medium transition focus:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-40;
   }
-  .btn-primary { @apply btn bg-navy text-white hover:bg-navy-light focus-visible:ring-navy; }
-  .btn-secondary { @apply btn border border-stone-300 bg-white text-stone-800 hover:bg-stone-50 focus-visible:ring-stone-400; }
-  .btn-danger { @apply btn bg-red-700 text-white hover:bg-red-800 focus-visible:ring-red-700; }
-  .btn-ghost { @apply btn text-stone-600 hover:bg-stone-100 hover:text-stone-900; }
-  .section-title { @apply font-display text-xl font-bold uppercase tracking-wide text-stone-900; }
+  .btn-primary { @apply btn bg-accent text-white hover:bg-accent-hover focus-visible:ring-accent/30; }
+  .btn-secondary { @apply btn bg-black/[0.06] text-ink hover:bg-black/[0.1] focus-visible:ring-black/10; }
+  .btn-danger { @apply btn bg-[#FF3B30] text-white hover:bg-[#e6352b] focus-visible:ring-red-500/30; }
+  .btn-ghost { @apply btn text-accent hover:bg-accent/10; }
+  .section-title { @apply font-display text-[22px] font-semibold tracking-tight text-ink; }
+  .glass { @apply bg-white/75 backdrop-blur-xl backdrop-saturate-150; }
 }
 
-.tv-bg { background: #0c0f14; }
+.tv-bg { background: #000; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }

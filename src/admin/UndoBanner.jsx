@@ -43,38 +43,38 @@ export default function UndoBanner({ undo, auth, onDone, onAuthError }) {
   const pct = (remaining / 60) * 100;
 
   return (
-    <div className="relative border-t border-white/10" style={{ background: house.dark }} role="status" aria-live="polite">
+    <div className="relative border-t border-black/[0.06] bg-white" role="status" aria-live="polite">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2.5">
         <HouseEmblem houseId={house.id} size={36} className="shrink-0" />
         {message ? (
-          <p className={`flex-1 text-sm font-semibold ${message.tone === 'error' ? 'text-red-200' : 'text-white'}`}>
+          <p className={`flex-1 text-[15px] font-medium ${message.tone === 'error' ? 'text-[#c4271d]' : 'text-ink'}`}>
             {message.tone === 'success' && <CheckCircle2 className="mr-1 inline h-4 w-4" />}
             {message.text}
           </p>
         ) : (
           <>
-            <p className="min-w-0 flex-1 text-sm font-semibold text-white sm:text-base">
+            <p className="min-w-0 flex-1 text-[15px] font-medium text-ink">
               {verb} {amount} pts {points > 0 ? 'to' : 'from'} {house.name}
-              <span className="text-white/70"> —</span>
+              <span className="text-mute"> —</span>
             </p>
             <button
               type="button"
               onClick={doUndo}
               disabled={busy || remaining <= 0}
-              className="btn shrink-0 bg-white px-3 py-2 text-stone-900 hover:bg-stone-100"
+              className="btn-primary shrink-0 px-4 py-2"
               data-testid="undo-button"
             >
               <RotateCcw className="h-4 w-4" /> {busy ? 'Undoing…' : `Undo (${remaining}s)`}
             </button>
           </>
         )}
-        <button type="button" onClick={onDone} className="shrink-0 rounded-lg p-1.5 text-white/70 hover:bg-white/10 hover:text-white" aria-label="Dismiss">
+        <button type="button" onClick={onDone} className="shrink-0 rounded-full p-1.5 text-mute hover:bg-black/5 hover:text-ink" aria-label="Dismiss">
           <X className="h-4 w-4" />
         </button>
       </div>
       {!message && (
-        <div className="h-1 bg-white/10">
-          <div className="h-full bg-white/70 transition-[width] duration-300 ease-linear" style={{ width: `${pct}%` }} />
+        <div className="h-0.5 bg-black/[0.04]">
+          <div className="h-full transition-[width] duration-300 ease-linear" style={{ width: `${pct}%`, background: house.primary }} />
         </div>
       )}
     </div>

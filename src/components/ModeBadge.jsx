@@ -2,7 +2,7 @@ import { MODE } from '../lib/storage.js';
 
 /** Small status line: live Supabase connection or offline localStorage mode. */
 export default function ModeBadge({ status, dark = false, className = '' }) {
-  let dot = 'bg-stone-400';
+  let dot = 'bg-neutral-400';
   let label = 'Connecting…';
   let title = 'Connected to Supabase';
   if (MODE === 'local') {
@@ -17,7 +17,7 @@ export default function ModeBadge({ status, dark = false, className = '' }) {
     label = 'Reconnecting…';
   }
   return (
-    <span title={title} className={`inline-flex items-center gap-1.5 text-xs font-medium ${dark ? 'text-white/70' : 'text-stone-500'} ${className}`}>
+    <span title={title} className={`inline-flex items-center gap-1.5 text-xs font-medium ${dark ? 'text-white/70' : 'text-neutral-500'} ${className}`}>
       <span className={`inline-block h-2 w-2 rounded-full ${dot}`} aria-hidden="true" />
       {label}
     </span>
