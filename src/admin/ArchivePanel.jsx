@@ -49,12 +49,12 @@ export default function ArchivePanel({ superPassword, ranked, archives, frozen, 
         icon={Archive}
         description="Saves a snapshot of the current standings and champion to Past Terms, then resets all five houses to 0."
       >
-        <div className="mb-4 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Current standings (live)</p>
+        <div className="mb-4 rounded-md bg-stone-50 p-3 ring-1 ring-stone-200">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500">Current standings (live)</p>
           <ol className="space-y-1.5">
             {ranked.map((h) => (
               <li key={h.id} className="flex items-center gap-2 text-sm">
-                <span className="w-8 tabular-nums text-slate-500">{ordinal(h.rank)}</span>
+                <span className="w-8 tabular-nums text-stone-500">{ordinal(h.rank)}</span>
                 <HouseEmblem houseId={h.id} size={22} />
                 <span className="flex-1 font-semibold" style={{ color: h.text }}>
                   {h.name}
@@ -88,7 +88,7 @@ export default function ArchivePanel({ superPassword, ranked, archives, frozen, 
 
       <SectionCard title="Past Terms" icon={Trophy} description={`${archives.length} archived term${archives.length === 1 ? '' : 's'}`}>
         {archives.length === 0 ? (
-          <p className="rounded-xl bg-slate-50 p-6 text-center text-sm text-slate-500">No archived terms yet.</p>
+          <p className="rounded-md bg-stone-50 p-6 text-center text-sm text-stone-500">No archived terms yet.</p>
         ) : (
           <div className="max-h-[36rem] space-y-3 overflow-y-auto pr-1">
             {archives.map((a) => (

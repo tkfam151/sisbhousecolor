@@ -61,7 +61,7 @@ export default function UndoBanner({ undo, auth, onDone, onAuthError }) {
               type="button"
               onClick={doUndo}
               disabled={busy || remaining <= 0}
-              className="btn shrink-0 bg-white px-3 py-2 text-slate-900 hover:bg-slate-100"
+              className="btn shrink-0 bg-white px-3 py-2 text-stone-900 hover:bg-stone-100"
               data-testid="undo-button"
             >
               <RotateCcw className="h-4 w-4" /> {busy ? 'Undoing…' : `Undo (${remaining}s)`}

@@ -4,7 +4,7 @@ import { formatDateTime } from '../lib/utils.js';
 import { SectionCard } from '../components/ui.jsx';
 
 const ACTION_STYLES = {
-  LOGIN: 'bg-slate-100 text-slate-700',
+  LOGIN: 'bg-stone-100 text-stone-700',
   DELETE_LOG: 'bg-red-100 text-red-800',
   UNDO_AWARD: 'bg-amber-100 text-amber-800',
   POINTS_DEDUCTED: 'bg-orange-100 text-orange-800',
@@ -53,7 +53,7 @@ export default function AuditPanel({ logs, loading, reload }) {
       <div className="mb-4 grid gap-2 sm:grid-cols-2">
         <label className="relative">
           <span className="sr-only">Search audit log</span>
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
           <input className="input pl-9" placeholder="Search actor or details…" value={query} onChange={(e) => setQuery(e.target.value)} />
         </label>
         <select className="input" value={action} onChange={(e) => setAction(e.target.value)} aria-label="Filter by action">
@@ -64,31 +64,31 @@ export default function AuditPanel({ logs, loading, reload }) {
         </select>
       </div>
       {loading ? (
-        <p className="animate-pulse text-sm text-slate-500">Loading audit log…</p>
+        <p className="animate-pulse text-sm text-stone-500">Loading audit log…</p>
       ) : filtered.length === 0 ? (
-        <p className="rounded-xl bg-slate-50 p-6 text-center text-sm text-slate-500">No audit entries.</p>
+        <p className="rounded-md bg-stone-50 p-6 text-center text-sm text-stone-500">No audit entries.</p>
       ) : (
         <div className="-mx-4 max-h-[40rem] overflow-auto sm:mx-0">
           <table className="w-full min-w-[44rem] text-sm">
             <thead className="sticky top-0 bg-white">
-              <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
+              <tr className="border-b border-stone-200 text-left text-xs uppercase tracking-wide text-stone-500">
                 <th className="px-3 py-2 font-semibold">Timestamp</th>
                 <th className="px-3 py-2 font-semibold">Actor</th>
                 <th className="px-3 py-2 font-semibold">Action</th>
                 <th className="px-3 py-2 font-semibold">Details</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-stone-100">
               {filtered.map((l) => (
                 <tr key={l.id} className="align-top">
-                  <td className="whitespace-nowrap px-3 py-2 text-slate-600">{formatDateTime(l.created_at)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-medium text-slate-800">{l.actor}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-stone-600">{formatDateTime(l.created_at)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 font-medium text-stone-800">{l.actor}</td>
                   <td className="px-3 py-2">
-                    <span className={`inline-flex rounded-md px-2 py-0.5 font-mono text-xs font-semibold ${ACTION_STYLES[l.action_type] || 'bg-slate-100 text-slate-700'}`}>
+                    <span className={`inline-flex rounded-md px-2 py-0.5 font-mono text-xs font-semibold ${ACTION_STYLES[l.action_type] || 'bg-stone-100 text-stone-700'}`}>
                       {l.action_type}
                     </span>
                   </td>
-                  <td className="px-3 py-2 text-slate-700">{l.details}</td>
+                  <td className="px-3 py-2 text-stone-700">{l.details}</td>
                 </tr>
               ))}
             </tbody>

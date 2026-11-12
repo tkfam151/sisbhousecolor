@@ -70,7 +70,7 @@ export default function LogsPanel({ auth, logs, onAuthError }) {
       <div className="mb-4 grid gap-2 sm:grid-cols-3">
         <label className="relative">
           <span className="sr-only">Search</span>
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
           <input className="input pl-9" placeholder="Search reason or teacher…" value={query} onChange={(e) => setQuery(e.target.value)} />
         </label>
         <select className="input" value={houseFilter} onChange={(e) => setHouseFilter(e.target.value)} aria-label="Filter by house">
@@ -96,13 +96,13 @@ export default function LogsPanel({ auth, logs, onAuthError }) {
       )}
 
       {filtered.length === 0 ? (
-        <p className="rounded-xl bg-slate-50 p-6 text-center text-sm text-slate-500">No log entries match.</p>
+        <p className="rounded-md bg-stone-50 p-6 text-center text-sm text-stone-500">No log entries match.</p>
       ) : (
         <>
           <div className="-mx-4 overflow-x-auto sm:mx-0">
             <table className="w-full min-w-[44rem] text-sm">
               <thead>
-                <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
+                <tr className="border-b border-stone-200 text-left text-xs uppercase tracking-wide text-stone-500">
                   <th className="px-3 py-2 font-semibold">Date/Time</th>
                   <th className="px-3 py-2 font-semibold">House</th>
                   <th className="px-3 py-2 text-right font-semibold">Points</th>
@@ -114,25 +114,25 @@ export default function LogsPanel({ auth, logs, onAuthError }) {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-stone-100">
                 {filtered.slice(0, limit).map((log) => {
                   const h = getHouse(log.house_id);
                   return (
-                    <tr key={log.id} className="hover:bg-slate-50">
-                      <td className="whitespace-nowrap px-3 py-2 text-slate-600">{formatDateTime(log.created_at)}</td>
+                    <tr key={log.id} className="hover:bg-stone-50">
+                      <td className="whitespace-nowrap px-3 py-2 text-stone-600">{formatDateTime(log.created_at)}</td>
                       <td className="px-3 py-2">
                         <span className="flex items-center gap-2 font-semibold" style={{ color: h.text }}>
                           <HouseEmblem houseId={h.id} size={22} /> {log.house_name}
                         </span>
                       </td>
-                      <td className={`px-3 py-2 text-right font-bold tabular-nums ${log.points < 0 ? 'text-red-700' : 'text-slate-900'}`}>
+                      <td className={`px-3 py-2 text-right font-bold tabular-nums ${log.points < 0 ? 'text-red-700' : 'text-stone-900'}`}>
                         {signed(log.points)}
                       </td>
-                      <td className="px-3 py-2 text-slate-600">{log.category}</td>
-                      <td className="max-w-[16rem] truncate px-3 py-2 text-slate-700" title={log.reason || ''}>
-                        {log.reason || <span className="text-slate-400">—</span>}
+                      <td className="px-3 py-2 text-stone-600">{log.category}</td>
+                      <td className="max-w-[16rem] truncate px-3 py-2 text-stone-700" title={log.reason || ''}>
+                        {log.reason || <span className="text-stone-400">—</span>}
                       </td>
-                      <td className="px-3 py-2 text-slate-700">{log.awarded_by}</td>
+                      <td className="px-3 py-2 text-stone-700">{log.awarded_by}</td>
                       <td className="px-3 py-2 text-right">
                         <button
                           type="button"
@@ -149,7 +149,7 @@ export default function LogsPanel({ auth, logs, onAuthError }) {
               </tbody>
             </table>
           </div>
-          <div className="mt-3 flex items-center justify-between text-sm text-slate-500">
+          <div className="mt-3 flex items-center justify-between text-sm text-stone-500">
             <span>
               Showing {formatPoints(Math.min(limit, filtered.length))} of {formatPoints(filtered.length)}
             </span>

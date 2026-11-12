@@ -26,12 +26,6 @@ import ArchivePanel from './ArchivePanel.jsx';
 import AuditPanel from './AuditPanel.jsx';
 import MyAccountPanel from './MyAccountPanel.jsx';
 
-const ROLE_CHIP = {
-  super_admin: ['Super Admin', 'bg-violet-100 text-violet-800 ring-violet-200'],
-  general_admin: ['General Admin', 'bg-sky-100 text-sky-800 ring-sky-200'],
-  teacher: ['Teacher', 'bg-emerald-100 text-emerald-800 ring-emerald-200'],
-};
-
 export default function Dashboard({ session, onLogout, onSessionUpdate }) {
   const isSuper = session.role === 'super_admin';
   const isAdmin = isSuper || session.role === 'general_admin';
@@ -112,28 +106,26 @@ export default function Dashboard({ session, onLogout, onSessionUpdate }) {
     });
   }, []);
 
-  const [chipLabel, chipClass] = ROLE_CHIP[session.role] || ROLE_CHIP.teacher;
 
   return (
     <div className="min-h-screen pb-16">
-      <header className="sticky top-0 z-30 bg-slate-900 text-white shadow-lg">
+      <header className="sticky top-0 z-30 bg-navy text-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0">
-            <p className="text-xs uppercase tracking-widest text-white/50">House Points Admin</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-white/50">SISB House Points</p>
             <p className="truncate text-base font-bold sm:text-lg" data-testid="logged-in-as">
               Logged in as: {headerLabel(session)}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className={`hidden rounded-full px-2.5 py-1 text-xs font-bold ring-1 sm:inline-flex ${chipClass}`}>{chipLabel}</span>
             <ModeBadge status={board.status} dark />
-            <a href="../" target="_blank" rel="noreferrer" className="btn bg-white/10 px-3 py-2 text-white ring-1 ring-white/20 hover:bg-white/20">
+            <a href="../" target="_blank" rel="noreferrer" className="btn px-3 py-2 text-white/80 hover:bg-white/10 hover:text-white">
               <ExternalLink className="h-4 w-4" /> <span className="hidden sm:inline">Leaderboard</span>
             </a>
-            <a href="../?tv=1" target="_blank" rel="noreferrer" className="btn bg-white/10 px-3 py-2 text-white ring-1 ring-white/20 hover:bg-white/20">
+            <a href="../?tv=1" target="_blank" rel="noreferrer" className="btn px-3 py-2 text-white/80 hover:bg-white/10 hover:text-white">
               <MonitorPlay className="h-4 w-4" /> <span className="hidden sm:inline">TV Mode</span>
             </a>
-            <button type="button" onClick={() => onLogout()} className="btn bg-white px-3 py-2 text-slate-900 hover:bg-slate-100">
+            <button type="button" onClick={() => onLogout()} className="btn bg-white px-3 py-2 text-navy hover:bg-stone-100">
               <LogOut className="h-4 w-4" /> Log Out
             </button>
           </div>
@@ -164,19 +156,19 @@ export default function Dashboard({ session, onLogout, onSessionUpdate }) {
 
         {tabs.length > 1 && (
           <nav className="-mx-4 overflow-x-auto px-4" aria-label="Dashboard sections">
-            <div className="flex w-max gap-1 rounded-2xl bg-white p-1 shadow-sm ring-1 ring-slate-200" role="tablist">
-              {tabs.map(({ id, label, icon: Icon }) => (
+            <div className="flex w-max gap-5 border-b border-stone-300" role="tablist">
+              {tabs.map(({ id, label }) => (
                 <button
                   key={id}
                   type="button"
                   role="tab"
                   aria-selected={activeTab === id}
                   onClick={() => setTab(id)}
-                  className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold transition ${
-                    activeTab === id ? 'bg-slate-900 text-white shadow' : 'text-slate-600 hover:bg-slate-100'
+                  className={`-mb-px whitespace-nowrap border-b-2 pb-2.5 pt-1 text-sm font-semibold transition-colors ${
+                    activeTab === id ? 'border-navy text-navy' : 'border-transparent text-stone-500 hover:text-stone-900'
                   }`}
                 >
-                  <Icon className="h-4 w-4" aria-hidden="true" /> {label}
+                  {label}
                 </button>
               ))}
             </div>

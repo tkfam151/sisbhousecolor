@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, KeyRound, LogIn, ShieldCheck, UserRound } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { HOUSES, HouseEmblem } from '../lib/houses.js';
 import { storage } from '../lib/storage.js';
 import { Alert } from '../components/ui.jsx';
@@ -47,24 +47,24 @@ export default function LoginPage({ onLogin, notice }) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4 py-8">
+    <div className="flex min-h-screen flex-col bg-navy px-4 py-8">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
         <div className="mb-6 text-center text-white">
-          <div className="mb-4 flex justify-center -space-x-3" aria-hidden="true">
+          <div className="mb-5 flex justify-center gap-2" aria-hidden="true">
             {HOUSES.map((h) => (
-              <HouseEmblem key={h.id} houseId={h.id} size={52} className="rounded-full ring-4 ring-slate-900" />
+              <HouseEmblem key={h.id} houseId={h.id} size={52} />
             ))}
           </div>
-          <h1 className="font-display text-4xl tracking-wide">House Points Staff Login</h1>
-          <p className="mt-1 text-sm text-white/60">Award points, manage the board and run events.</p>
+          <h1 className="font-display text-4xl font-extrabold uppercase tracking-wide">Staff Login</h1>
+          <p className="mt-1 text-sm text-white/60">SISB House Points</p>
         </div>
 
         <div className="card overflow-hidden">
-          <div className="grid grid-cols-2 border-b border-slate-200" role="tablist" aria-label="Login type">
+          <div className="grid grid-cols-2 border-b border-stone-200" role="tablist" aria-label="Login type">
             {[
-              ['teacher', 'Teacher Login', UserRound],
-              ['admin', 'Admin Login', ShieldCheck],
-            ].map(([key, label, Icon]) => (
+              ['teacher', 'Teacher Login'],
+              ['admin', 'Admin Login'],
+            ].map(([key, label]) => (
               <button
                 key={key}
                 type="button"
@@ -74,10 +74,10 @@ export default function LoginPage({ onLogin, notice }) {
                 aria-controls="login-panel"
                 onClick={() => switchTab(key)}
                 className={`flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-semibold transition ${
-                  tab === key ? 'border-b-2 border-slate-900 bg-white text-slate-900' : 'bg-slate-50 text-slate-500 hover:text-slate-800'
+                  tab === key ? 'border-b-2 border-navy bg-white text-navy' : 'bg-stone-50 text-stone-500 hover:text-stone-800'
                 }`}
               >
-                <Icon className="h-4 w-4" aria-hidden="true" /> {label}
+                {label}
               </button>
             ))}
           </div>
@@ -103,8 +103,8 @@ export default function LoginPage({ onLogin, notice }) {
                 />
               </div>
             ) : (
-              <p className="text-sm text-slate-500">
-                Enter the Super Admin or General Admin password. Your access level is detected automatically.
+              <p className="text-sm text-stone-500">
+                Enter the Super Admin or General Admin password.
               </p>
             )}
             <div>
@@ -123,14 +123,7 @@ export default function LoginPage({ onLogin, notice }) {
             </div>
             {error && <Alert tone="error">{error}</Alert>}
             <button type="submit" className="btn-primary w-full py-3 text-base" disabled={busy}>
-              {busy ? (
-                'Checking…'
-              ) : (
-                <>
-                  {tab === 'teacher' ? <LogIn className="h-5 w-5" /> : <KeyRound className="h-5 w-5" />}
-                  {tab === 'teacher' ? 'Log in as Teacher' : 'Log in as Admin'}
-                </>
-              )}
+              {busy ? 'Checking…' : tab === 'teacher' ? 'Log in as Teacher' : 'Log in as Admin'}
             </button>
           </form>
         </div>

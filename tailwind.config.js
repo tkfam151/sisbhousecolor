@@ -4,8 +4,12 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        display: ['"Bebas Neue"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Barlow', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['"Barlow Condensed"', 'Barlow', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+      colors: {
+        paper: '#F4F2EE',
+        navy: { DEFAULT: '#14213D', light: '#22355E' },
       },
       keyframes: {
         'toast-in': {

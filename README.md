@@ -144,7 +144,8 @@ Usernames are 3–40 characters (letters, numbers, `.`, `-`, `_`) and are stored
 index.html               Public page entry
 admin/index.html         Admin page entry
 public/404.html          GitHub Pages redirect for unknown paths
-src/lib/houses.js        House metadata + inline SVG big-cat emblems
+src/lib/houses.js        House metadata + HouseEmblem component
+src/assets/emblems/      Official house mascot images (swap a file to change a logo)
 src/lib/storage.js       Unified data layer (Supabase RPC/Realtime or localStorage mirror)
 src/public/              Leaderboard, TV mode, chart, breakdown, archives
 src/admin/               Login + role-based dashboard panels

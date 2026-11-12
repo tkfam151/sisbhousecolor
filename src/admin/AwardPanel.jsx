@@ -106,8 +106,8 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
         icon={Sparkles}
         description={
           isAdmin
-            ? 'Pick a house, tap a preset or enter custom points. Admins can also deduct points.'
-            : 'Pick a house, tap a preset or enter custom points. Your name is recorded with every award.'
+            ? 'Admins can also deduct points.'
+            : 'Your name is saved with every award.'
         }
       >
         <form onSubmit={onSubmit} className="space-y-5" noValidate>
@@ -125,10 +125,10 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
                       setError(null);
                     }}
                     aria-pressed={selected}
-                    className={`relative flex flex-col items-center gap-1 rounded-2xl border-2 p-2.5 text-center transition active:scale-[0.98] ${
-                      selected ? 'shadow-lg' : 'border-slate-200 bg-white hover:border-slate-300'
+                    className={`relative flex flex-col items-center gap-1 rounded-lg border-2 p-2.5 text-center transition active:scale-[0.98] ${
+                      selected ? '' : 'border-stone-200 bg-white hover:border-stone-400'
                     }`}
-                    style={selected ? { borderColor: h.primary, background: h.light, boxShadow: `0 8px 24px -8px ${h.primary}` } : undefined}
+                    style={selected ? { borderColor: h.primary, background: h.light } : undefined}
                   >
                     {selected && (
                       <span className="absolute right-1.5 top-1.5 rounded-full p-0.5 text-white" style={{ background: h.primary }}>
@@ -139,7 +139,7 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
                     <span className="text-sm font-bold leading-tight" style={{ color: h.text }}>
                       {h.name}
                     </span>
-                    <span className="text-xs tabular-nums text-slate-500">{formatPoints(pointsByHouse[h.id] ?? 0)} pts</span>
+                    <span className="text-xs tabular-nums text-stone-500">{formatPoints(pointsByHouse[h.id] ?? 0)} pts</span>
                   </button>
                 );
               })}
@@ -157,8 +157,8 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
                     type="button"
                     onClick={() => applyPreset(preset)}
                     aria-pressed={active}
-                    className={`rounded-full px-3.5 py-2 text-sm font-semibold ring-1 transition active:scale-95 ${
-                      active ? 'bg-slate-900 text-white ring-slate-900' : 'bg-white text-slate-700 ring-slate-300 hover:bg-slate-50'
+                    className={`rounded-md px-3 py-2 text-sm font-semibold ring-1 transition active:scale-95 ${
+                      active ? 'bg-navy text-white ring-navy' : 'bg-white text-stone-700 ring-stone-300 hover:bg-stone-50'
                     }`}
                   >
                     {preset.label} (+{preset.points} · {preset.category})
@@ -174,7 +174,7 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
                 3. Points
               </label>
               {isAdmin && (
-                <div className="mb-2 inline-flex rounded-xl bg-slate-100 p-1 text-sm" role="group" aria-label="Award or deduct">
+                <div className="mb-2 inline-flex rounded-md bg-stone-100 p-1 text-sm" role="group" aria-label="Award or deduct">
                   {[
                     ['award', 'Award (+)'],
                     ['deduct', 'Deduct (−)'],
@@ -191,8 +191,8 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
                         direction === key
                           ? key === 'deduct'
                             ? 'bg-red-600 text-white shadow'
-                            : 'bg-white text-slate-900 shadow-sm'
-                          : 'text-slate-500 hover:text-slate-800'
+                            : 'bg-white text-stone-900 shadow-sm'
+                          : 'text-stone-500 hover:text-stone-800'
                       }`}
                     >
                       {label}
@@ -233,8 +233,8 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
                     type="button"
                     aria-pressed={category === c}
                     onClick={() => setCategory(c)}
-                    className={`rounded-xl px-3 py-2.5 text-sm font-semibold ring-1 transition ${
-                      category === c ? 'bg-slate-900 text-white ring-slate-900' : 'bg-white text-slate-700 ring-slate-300 hover:bg-slate-50'
+                    className={`rounded-md px-3 py-2.5 text-sm font-semibold ring-1 transition ${
+                      category === c ? 'bg-navy text-white ring-navy' : 'bg-white text-stone-700 ring-stone-300 hover:bg-stone-50'
                     }`}
                   >
                     {c}
@@ -246,7 +246,7 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
 
           <div>
             <label htmlFor="reason" className="label">
-              5. Reason <span className="font-normal text-slate-400">(optional)</span>
+              5. Reason <span className="font-normal text-stone-400">(optional)</span>
             </label>
             <input
               id="reason"
@@ -266,8 +266,8 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
           <button
             type="submit"
             disabled={busy}
-            className="btn w-full py-4 text-base text-white shadow-lg disabled:opacity-60"
-            style={{ background: house ? (preview < 0 ? '#B91C1C' : house.primary) : '#0F172A' }}
+            className="btn w-full py-4 text-base text-white disabled:opacity-60"
+            style={{ background: house ? (preview < 0 ? '#B91C1C' : house.primary) : '#14213D' }}
           >
             <Send className="h-5 w-5" />
             {busy
@@ -281,9 +281,9 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
 
       <SectionCard title="Recent awards" description={auth.role === 'teacher' ? 'Latest points across all houses.' : 'Latest entries on the board.'}>
         {myRecent.length === 0 ? (
-          <p className="rounded-xl bg-slate-50 p-4 text-center text-sm text-slate-500">Nothing yet this term.</p>
+          <p className="rounded-md bg-stone-50 p-4 text-center text-sm text-stone-500">Nothing yet this term.</p>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-stone-100">
             {myRecent.map((log) => {
               const h = getHouse(log.house_id);
               return (
@@ -295,9 +295,9 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
                       <span style={{ color: h.text }} className="font-semibold">
                         {h.shortName}
                       </span>{' '}
-                      <span className="text-slate-500">{log.reason || log.category}</span>
+                      <span className="text-stone-500">{log.reason || log.category}</span>
                     </p>
-                    <p className="truncate text-xs text-slate-400">
+                    <p className="truncate text-xs text-stone-400">
                       {log.awarded_by} · {timeAgo(log.created_at)}
                     </p>
                   </div>

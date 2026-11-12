@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Archive, Lock, MonitorPlay, RefreshCw, Trophy } from 'lucide-react';
+import { MonitorPlay, RefreshCw } from 'lucide-react';
 import { useLeaderboard } from '../hooks/useLeaderboard.js';
-import { getHouse, HouseEmblem } from '../lib/houses.js';
+import { getHouse } from '../lib/houses.js';
 import { fireHouseConfetti } from '../lib/celebrate.js';
 import { formatPoints } from '../lib/utils.js';
 import ModeBadge from '../components/ModeBadge.jsx';
@@ -66,8 +66,8 @@ export default function PublicApp() {
         fireHouseConfetti(leader, { big: true });
         showToast({
           house: leader,
-          text: `Scores revealed! ${leader.name} lead with ${formatPoints(leader.points)} pts!`,
-          sub: 'Mystery Mode is over — these are the real standings.',
+          text: `${leader.name} lead with ${formatPoints(leader.points)} pts!`,
+          sub: 'Scores revealed. These are the real standings.',
         });
       }
     }
@@ -106,14 +106,14 @@ export default function PublicApp() {
       <div className={`flex min-h-screen items-center justify-center ${tv ? 'tv-bg text-white' : ''}`}>
         {board.error ? (
           <div className="card mx-4 max-w-md p-6 text-center">
-            <p className="font-semibold text-slate-900">Couldn’t load the leaderboard</p>
-            <p className="mt-1 text-sm text-slate-600">{board.error.message}</p>
+            <p className="font-semibold text-stone-900">Couldn’t load the leaderboard</p>
+            <p className="mt-1 text-sm text-stone-600">{board.error.message}</p>
             <button type="button" className="btn-primary mt-4" onClick={board.refresh}>
               <RefreshCw className="h-4 w-4" /> Try again
             </button>
           </div>
         ) : (
-          <p className="animate-pulse text-lg font-semibold">Loading leaderboard…</p>
+          <p className="text-lg font-semibold">Loading…</p>
         )}
       </div>
     );
@@ -133,53 +133,46 @@ export default function PublicApp() {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-slate-900 text-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:py-5">
-          <div className="flex items-center gap-3">
-            <div className="flex -space-x-2" aria-hidden="true">
-              {board.houses.map((h) => (
-                <HouseEmblem key={h.id} houseId={h.id} size={32} className="rounded-full ring-2 ring-slate-900" />
-              ))}
-            </div>
-            <div>
-              <h1 className="font-display text-3xl leading-none tracking-wide sm:text-4xl">SISB House Leaderboard</h1>
-              <p className="text-xs text-white/60 sm:text-sm">Live house color points</p>
-            </div>
+      <header className="bg-navy text-white">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4">
+          <div>
+            <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide sm:text-4xl">SISB House Points</h1>
+            <p className="mt-0.5 text-sm text-white/60">Red Leopards · Orange Tigers · Yellow Cheetahs · Green Panthers · Blue Lynxes</p>
           </div>
-          <nav className="flex flex-wrap items-center gap-2" aria-label="Leaderboard actions">
-            <button type="button" onClick={enterTv} className="btn bg-white text-slate-900 hover:bg-slate-100">
+          <nav className="flex flex-wrap items-center gap-1 text-sm font-semibold" aria-label="Leaderboard actions">
+            <button type="button" onClick={enterTv} className="btn bg-white px-3 py-2 text-navy hover:bg-stone-100">
               <MonitorPlay className="h-4 w-4" /> TV / Projector Mode
             </button>
-            <button type="button" onClick={() => setArchivesOpen(true)} className="btn bg-white/10 text-white ring-1 ring-white/20 hover:bg-white/20">
-              <Archive className="h-4 w-4" /> Past Terms
+            <button type="button" onClick={() => setArchivesOpen(true)} className="btn px-3 py-2 text-white/80 hover:bg-white/10 hover:text-white">
+              Past Terms
             </button>
-            <a href="./admin/" className="btn bg-white/10 text-white ring-1 ring-white/20 hover:bg-white/20">
-              <Lock className="h-4 w-4" /> Staff Login
+            <a href="./admin/" className="btn px-3 py-2 text-white/80 hover:bg-white/10 hover:text-white">
+              Staff Login
             </a>
           </nav>
         </div>
+        <div className="flex h-1.5" aria-hidden="true">
+          {board.houses.map((h) => (
+            <span key={h.id} className="flex-1" style={{ background: h.primary }} />
+          ))}
+        </div>
       </header>
 
-      <main className="mx-auto max-w-6xl space-y-5 px-4 py-5 sm:py-6">
+      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">
         {board.frozen && <FreezeBanner frozenAt={board.frozenAt} />}
-
-        {hasLeader && !board.frozen && (
-          <div
-            className="flex items-center gap-3 rounded-2xl px-4 py-3 text-white shadow"
-            style={{ background: `linear-gradient(90deg, ${leader.primary}, ${leader.dark})` }}
-          >
-            <Trophy className="h-6 w-6 shrink-0 text-yellow-300" aria-hidden="true" />
-            <p className="text-sm font-semibold sm:text-base">
-              {leader.name} lead by {formatPoints(leader.points - board.ranked[1].points)} pts!
-            </p>
-          </div>
-        )}
 
         <div className="grid gap-5 lg:grid-cols-5">
           <section className="lg:col-span-3" aria-labelledby="standings-title">
-            <h2 id="standings-title" className="sr-only">
-              Standings
-            </h2>
+            <div className="mb-2 flex items-baseline justify-between gap-2">
+              <h2 id="standings-title" className="section-title">
+                Standings
+              </h2>
+              {hasLeader && !board.frozen && (
+                <p className="text-sm text-stone-600">
+                  {leader.name} ahead by {formatPoints(leader.points - board.ranked[1].points)}
+                </p>
+              )}
+            </div>
             <HouseStandings ranked={board.ranked} />
           </section>
           <div className="lg:col-span-2">
@@ -191,8 +184,8 @@ export default function PublicApp() {
         <CategoryBreakdown logs={board.logs} />
       </main>
 
-      <footer className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 pb-8 pt-2 text-xs text-slate-500">
-        <p>© {new Date().getFullYear()} SISB · House Color Leaderboard</p>
+      <footer className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 pb-8 pt-2 text-xs text-stone-500">
+        <p>SISB House Color Points</p>
         <ModeBadge status={board.status} />
       </footer>
 
