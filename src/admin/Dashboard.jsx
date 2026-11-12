@@ -20,6 +20,7 @@ import AwardPanel from './AwardPanel.jsx';
 import UndoBanner from './UndoBanner.jsx';
 import FreezeControl from './FreezeControl.jsx';
 import LogsPanel from './LogsPanel.jsx';
+import PresetsPanel from './PresetsPanel.jsx';
 import TeachersPanel from './TeachersPanel.jsx';
 import SecurityPanel from './SecurityPanel.jsx';
 import ArchivePanel from './ArchivePanel.jsx';
@@ -39,7 +40,7 @@ export default function Dashboard({ session, onLogout, onSessionUpdate }) {
 
   const tabs = useMemo(() => {
     const list = [{ id: 'award', label: 'Award Points', icon: Sparkles }];
-    if (isAdmin) list.push({ id: 'logs', label: 'Point Logs', icon: ListOrdered });
+    if (isAdmin) list.push({ id: 'logs', label: 'Point Logs', icon: ListOrdered }, { id: 'presets', label: 'Presets', icon: Sparkles });
     if (isSuper) {
       list.push(
         { id: 'teachers', label: 'Teachers', icon: Users },
@@ -183,9 +184,13 @@ export default function Dashboard({ session, onLogout, onSessionUpdate }) {
             role={session.role}
             houses={board.houses}
             logs={board.logs}
+            presets={board.presets}
             onAwarded={onAwarded}
             onAuthError={handleAuthError}
           />
+        )}
+        {activeTab === 'presets' && isAdmin && (
+          <PresetsPanel auth={auth} presets={board.presets} onChanged={board.refresh} onAuthError={handleAuthError} />
         )}
         {activeTab === 'logs' && isAdmin && <LogsPanel auth={auth} logs={board.logs} onAuthError={handleAuthError} />}
         {activeTab === 'teachers' && isSuper && (

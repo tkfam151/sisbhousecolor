@@ -88,6 +88,17 @@ create table if not exists public.audit_logs (
 
 create index if not exists audit_logs_created_at_idx on public.audit_logs (created_at desc);
 
+create table if not exists public.award_presets (
+  id          uuid primary key default gen_random_uuid(),
+  label       text not null,
+  points      int  not null check (points > 0 and points <= 100000),
+  category    text not null check (category in ('Sports', 'Academics', 'Spirit', 'Other')),
+  sort_order  int  not null default 0,
+  created_at  timestamptz default now()
+);
+
+alter table public.app_config add column if not exists presets_seeded boolean not null default false;
+
 -- -----------------------------------------------------------------------------
 --  Seed data
 -- -----------------------------------------------------------------------------
@@ -110,6 +121,22 @@ values (
   crypt('sisbadmin', gen_salt('bf'))
 )
 on conflict (id) do nothing;            -- never overwrite changed passwords on re-run
+
+-- Default award presets, seeded once (admins can edit / delete them afterwards).
+do $$
+begin
+  if not (select presets_seeded from public.app_config where id = 1) then
+    insert into public.award_presets (label, points, category, sort_order) values
+      ('1st Place',            50, 'Sports',    1),
+      ('2nd Place',            30, 'Sports',    2),
+      ('3rd Place',            20, 'Sports',    3),
+      ('Academic Excellence',  15, 'Academics', 4),
+      ('Sportsmanship',        10, 'Spirit',    5),
+      ('House Spirit',          5, 'Spirit',    6);
+    update public.app_config set presets_seeded = true where id = 1;
+  end if;
+end;
+$$;
 
 -- -----------------------------------------------------------------------------
 --  Append-only audit log
@@ -166,6 +193,7 @@ alter table public.teachers      enable row level security;
 alter table public.point_logs    enable row level security;
 alter table public.term_archives enable row level security;
 alter table public.audit_logs    enable row level security;
+alter table public.award_presets enable row level security;
 
 -- Public read access (leaderboard + realtime)
 drop policy if exists "Public read houses" on public.houses;
@@ -182,7 +210,7 @@ create policy "Public read term_archives" on public.term_archives
 
 -- No policies at all on app_config / teachers / audit_logs => RLS denies every
 -- direct access from anon/authenticated. Belt and braces: revoke privileges too.
-revoke all on table public.app_config, public.teachers, public.audit_logs from anon, authenticated;
+revoke all on table public.app_config, public.teachers, public.audit_logs, public.award_presets from anon, authenticated;
 
 -- Nobody but the SECURITY DEFINER functions may write.
 revoke insert, update, delete, truncate, references, trigger
@@ -323,7 +351,12 @@ as $$
       from public.houses h), '[]'::jsonb),
     'freeze_leaderboard', c.freeze_leaderboard,
     'frozen_snapshot', c.frozen_snapshot,
-    'allow_teacher_password_change', c.allow_teacher_password_change
+    'allow_teacher_password_change', c.allow_teacher_password_change,
+    'presets', coalesce((
+      select jsonb_agg(jsonb_build_object('id', p.id, 'label', p.label, 'points', p.points,
+                                          'category', p.category, 'sort_order', p.sort_order)
+             order by p.sort_order, p.created_at)
+      from public.award_presets p), '[]'::jsonb)
   )
   from public.app_config c
   where c.id = 1;
@@ -538,6 +571,115 @@ begin
   select * into v_cfg from public.app_config where id = 1;
   return jsonb_build_object('freeze_leaderboard', v_cfg.freeze_leaderboard,
                             'frozen_snapshot', v_cfg.frozen_snapshot);
+end;
+$$;
+
+-- -----------------------------------------------------------------------------
+--  Award presets (General Admin + Super Admin)
+-- -----------------------------------------------------------------------------
+
+-- Creates a preset when p_id is null, otherwise updates it.
+create or replace function public.admin_save_preset(
+  p_auth jsonb, p_id uuid, p_label text, p_points int, p_category text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+declare
+  v_who    jsonb := public._require_admin(p_auth);
+  v_label  text  := trim(coalesce(p_label, ''));
+  v_preset public.award_presets%rowtype;
+begin
+  if v_label = '' then
+    raise exception 'Preset name is required';
+  end if;
+  if length(v_label) > 60 then
+    raise exception 'Preset name is too long (max 60 characters)';
+  end if;
+  if p_points is null or p_points < 1 or p_points > 100000 then
+    raise exception 'Preset points must be between 1 and 100000';
+  end if;
+  if coalesce(p_category, '') not in ('Sports', 'Academics', 'Spirit', 'Other') then
+    raise exception 'Invalid category';
+  end if;
+
+  if p_id is null then
+    insert into public.award_presets (label, points, category, sort_order)
+    values (v_label, p_points, p_category,
+            coalesce((select max(sort_order) from public.award_presets), 0) + 1)
+    returning * into v_preset;
+    perform public._audit(v_who ->> 'display_name', 'PRESET_CREATED',
+      format('Created preset "%s" (+%s · %s)', v_preset.label, v_preset.points, v_preset.category));
+  else
+    update public.award_presets
+       set label = v_label, points = p_points, category = p_category
+     where id = p_id
+    returning * into v_preset;
+    if not found then
+      raise exception 'Preset not found';
+    end if;
+    perform public._audit(v_who ->> 'display_name', 'PRESET_UPDATED',
+      format('Updated preset "%s" (+%s · %s)', v_preset.label, v_preset.points, v_preset.category));
+  end if;
+
+  -- Nudge realtime listeners so every open award form refreshes its presets.
+  update public.houses set points = points where id is not null;
+  return to_jsonb(v_preset);
+end;
+$$;
+
+create or replace function public.admin_delete_preset(p_auth jsonb, p_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+declare
+  v_who    jsonb := public._require_admin(p_auth);
+  v_preset public.award_presets%rowtype;
+begin
+  delete from public.award_presets where id = p_id returning * into v_preset;
+  if not found then
+    raise exception 'Preset not found';
+  end if;
+  perform public._audit(v_who ->> 'display_name', 'PRESET_DELETED',
+    format('Deleted preset "%s" (+%s · %s)', v_preset.label, v_preset.points, v_preset.category));
+  update public.houses set points = points where id is not null;
+  return jsonb_build_object('success', true);
+end;
+$$;
+
+-- Moves a preset one place up (p_direction = -1) or down (+1).
+create or replace function public.admin_move_preset(p_auth jsonb, p_id uuid, p_direction int)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+declare
+  v_who   jsonb := public._require_admin(p_auth);
+  v_ids   uuid[];
+  v_pos   int;
+  v_other int;
+  i       int;
+begin
+  select array_agg(id order by sort_order, created_at) into v_ids from public.award_presets;
+  v_pos := array_position(v_ids, p_id);
+  if v_pos is null then
+    raise exception 'Preset not found';
+  end if;
+  v_other := v_pos + case when p_direction < 0 then -1 else 1 end;
+  if v_other >= 1 and v_other <= array_length(v_ids, 1) then
+    v_ids[v_pos] := v_ids[v_other];
+    v_ids[v_other] := p_id;
+    for i in 1 .. array_length(v_ids, 1) loop
+      update public.award_presets set sort_order = i where id = v_ids[i];
+    end loop;
+    update public.houses set points = points where id is not null;
+  end if;
+  return jsonb_build_object('success', true);
 end;
 $$;
 
@@ -894,6 +1036,9 @@ grant execute on function public.award_points(jsonb, text, int, text, text)     
 grant execute on function public.undo_last_award(jsonb, uuid)                               to anon, authenticated;
 grant execute on function public.admin_delete_log(jsonb, uuid)                              to anon, authenticated;
 grant execute on function public.admin_toggle_freeze(jsonb, boolean)                        to anon, authenticated;
+grant execute on function public.admin_save_preset(jsonb, uuid, text, int, text)            to anon, authenticated;
+grant execute on function public.admin_delete_preset(jsonb, uuid)                           to anon, authenticated;
+grant execute on function public.admin_move_preset(jsonb, uuid, int)                        to anon, authenticated;
 grant execute on function public.super_admin_get_dashboard_data(text)                       to anon, authenticated;
 grant execute on function public.super_admin_create_teacher(text, text, text, text)         to anon, authenticated;
 grant execute on function public.super_admin_bulk_create_teachers(text, jsonb)              to anon, authenticated;

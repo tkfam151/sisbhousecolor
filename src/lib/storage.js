@@ -151,6 +151,13 @@ function createSupabaseBackend() {
 
     adminToggleFreeze: (auth, freeze) => rpc('admin_toggle_freeze', { p_auth: auth, p_freeze: freeze }),
 
+    adminSavePreset: (auth, id, label, points, category) =>
+      rpc('admin_save_preset', { p_auth: auth, p_id: id || null, p_label: label, p_points: points, p_category: category }),
+
+    adminDeletePreset: (auth, id) => rpc('admin_delete_preset', { p_auth: auth, p_id: id }),
+
+    adminMovePreset: (auth, id, direction) => rpc('admin_move_preset', { p_auth: auth, p_id: id, p_direction: direction }),
+
     superGetDashboard: (superPassword) =>
       rpc('super_admin_get_dashboard_data', { p_super_password: superPassword }),
 
@@ -263,6 +270,19 @@ async function verifyPassword(password, stored) {
   return (await sha256Hex(`${salt}:${password}`)) === digest;
 }
 
+export const DEFAULT_PRESETS = [
+  { label: '1st Place', points: 50, category: 'Sports' },
+  { label: '2nd Place', points: 30, category: 'Sports' },
+  { label: '3rd Place', points: 20, category: 'Sports' },
+  { label: 'Academic Excellence', points: 15, category: 'Academics' },
+  { label: 'Sportsmanship', points: 10, category: 'Spirit' },
+  { label: 'House Spirit', points: 5, category: 'Spirit' },
+];
+
+function defaultPresetRows() {
+  return DEFAULT_PRESETS.map((p, i) => ({ id: uuid(), ...p, sort_order: i + 1, created_at: nowIso() }));
+}
+
 function nowIso() {
   return new Date().toISOString();
 }
@@ -307,6 +327,7 @@ function createLocalBackend() {
         updated_at: nowIso(),
       },
       teachers: [],
+      award_presets: defaultPresetRows(),
       point_logs: [],
       term_archives: [],
       audit_logs: [],
@@ -322,6 +343,8 @@ function createLocalBackend() {
       if (existing) return existing;
       writeDb(db);
     }
+    // Upgrade older offline databases that predate editable presets.
+    if (!Array.isArray(db.award_presets)) db.award_presets = defaultPresetRows();
     // Self-heal: make sure all five houses exist.
     for (const house of HOUSES) {
       if (!db.houses.some((row) => row.id === house.id)) {
@@ -421,6 +444,22 @@ function createLocalBackend() {
     return { id: t.id, full_name: t.full_name, username: t.username, active: t.active, created_at: t.created_at };
   }
 
+  function sortedPresets(db) {
+    return [...db.award_presets]
+      .sort((a, b) => a.sort_order - b.sort_order || (a.created_at < b.created_at ? -1 : 1))
+      .map(({ id, label, points, category, sort_order }) => ({ id, label, points, category, sort_order }));
+  }
+
+  function validatePreset(label, points, category) {
+    const name = String(label || '').trim();
+    const pts = Number(points);
+    if (!name) throw makeError('Preset name is required');
+    if (name.length > 60) throw makeError('Preset name is too long (max 60 characters)');
+    if (!Number.isInteger(pts) || pts < 1 || pts > MAX_ABS_POINTS) throw makeError(`Preset points must be between 1 and ${MAX_ABS_POINTS}`);
+    if (!CATEGORIES.includes(category)) throw makeError('Invalid category');
+    return { name, pts };
+  }
+
   function computeStandings(db) {
     return sortedHouses(db)
       .sort((a, b) => b.points - a.points || a.sort_order - b.sort_order)
@@ -440,6 +479,7 @@ function createLocalBackend() {
         freeze_leaderboard: db.app_config.freeze_leaderboard,
         frozen_snapshot: db.app_config.frozen_snapshot,
         allow_teacher_password_change: db.app_config.allow_teacher_password_change,
+        presets: sortedPresets(db),
       }));
     },
 
@@ -587,6 +627,57 @@ function createLocalBackend() {
         audit(db, who.display_name, freeze ? 'FREEZE_ON' : 'FREEZE_OFF', freeze ? 'Mystery / Freeze Mode enabled — public scores frozen' : 'Mystery / Freeze Mode disabled — scores revealed');
         commit(db);
         return { freeze_leaderboard: cfg.freeze_leaderboard, frozen_snapshot: cfg.frozen_snapshot };
+      });
+    },
+
+    async adminSavePreset(auth, id, label, points, category) {
+      return run(async (db) => {
+        const who = await requireAdmin(db, auth);
+        const { name, pts } = validatePreset(label, points, category);
+        let preset;
+        if (!id) {
+          const maxOrder = Math.max(0, ...db.award_presets.map((p) => p.sort_order));
+          preset = { id: uuid(), label: name, points: pts, category, sort_order: maxOrder + 1, created_at: nowIso() };
+          db.award_presets.push(preset);
+          audit(db, who.display_name, 'PRESET_CREATED', `Created preset "${name}" (+${pts} · ${category})`);
+        } else {
+          preset = db.award_presets.find((p) => p.id === id);
+          if (!preset) throw makeError('Preset not found');
+          Object.assign(preset, { label: name, points: pts, category });
+          audit(db, who.display_name, 'PRESET_UPDATED', `Updated preset "${name}" (+${pts} · ${category})`);
+        }
+        commit(db);
+        return { ...preset };
+      });
+    },
+
+    async adminDeletePreset(auth, id) {
+      return run(async (db) => {
+        const who = await requireAdmin(db, auth);
+        const index = db.award_presets.findIndex((p) => p.id === id);
+        if (index < 0) throw makeError('Preset not found');
+        const [preset] = db.award_presets.splice(index, 1);
+        audit(db, who.display_name, 'PRESET_DELETED', `Deleted preset "${preset.label}" (+${preset.points} · ${preset.category})`);
+        commit(db);
+        return { success: true };
+      });
+    },
+
+    async adminMovePreset(auth, id, direction) {
+      return run(async (db) => {
+        await requireAdmin(db, auth);
+        const ordered = sortedPresets(db).map((p) => p.id);
+        const pos = ordered.indexOf(id);
+        if (pos < 0) throw makeError('Preset not found');
+        const other = pos + (direction < 0 ? -1 : 1);
+        if (other >= 0 && other < ordered.length) {
+          [ordered[pos], ordered[other]] = [ordered[other], ordered[pos]];
+          ordered.forEach((pid, i) => {
+            db.award_presets.find((p) => p.id === pid).sort_order = i + 1;
+          });
+          commit(db);
+        }
+        return { success: true };
       });
     },
 

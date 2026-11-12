@@ -14,7 +14,7 @@ With no Supabase credentials the app runs fully in **offline mode** using `local
 ## Features
 
 - **Roles** — Super Admin (`sisbadmin`), General Admin (shared password), Teachers (individual accounts). Every permission is enforced inside PostgreSQL `SECURITY DEFINER` functions, not just in the UI.
-- **Quick awards** — pick a house, enter points, choose a category (Sports, Academics, Spirit, Other) and add an optional reason.
+- **Editable one-tap presets** — admins add, edit, reorder and delete presets (defaults: 1st Place +50, 2nd Place +30, 3rd Place +20, Academic Excellence +15, Sportsmanship +10, House Spirit +5); teachers tap one to fill points, category and reason. Custom entries still work.
 - **Typo guardrail** — any entry above 999 points needs confirmation.
 - **60-second Undo** banner after every award.
 - **Mystery / Freeze Mode** — public screens show a frozen snapshot while points keep being counted; switching it off reveals the real standings everywhere, with confetti.
@@ -114,6 +114,7 @@ In offline mode, clear the site's localStorage to reset everything to the defaul
 | Delete any log entry | — | ✅ | ✅ |
 | Mystery / Freeze Mode | — | ✅ | ✅ |
 | Export CSV | — | ✅ | ✅ |
+| Add / edit / delete award presets | — | ✅ | ✅ |
 | Create / import / manage teachers | — | — | ✅ |
 | Change General Admin password, toggle teacher self-service | — | — | ✅ |
 | Archive & start new term | — | — | ✅ |

@@ -82,6 +82,7 @@ export function useLeaderboard({ respectFreeze = true, onNewAward } = {}) {
       ranked: rankHouses(houses),
       logs: visibleLogs,
       allowTeacherPasswordChange: Boolean(publicState?.allow_teacher_password_change),
+      presets: Array.isArray(publicState?.presets) ? publicState.presets : [],
     };
   }, [publicState, logs, respectFreeze]);
 
