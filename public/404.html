@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redirecting…</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // GitHub Pages serves this file for any unknown path. Send visitors to the
+      // correct entry page instead of showing a 404:
+      //   .../admin, .../admin/anything  -> .../admin/
+      //   anything else                  -> site root (/<repo>/ on project pages)
+      (function () {
+        var path = window.location.pathname;
+        var suffix = window.location.search + window.location.hash;
+        var lower = path.toLowerCase();
+        var adminAt = lower.indexOf('/admin');
+        var target;
+        if (adminAt >= 0) {
+          target = path.slice(0, adminAt) + '/admin/';
+        } else {
+          var segments = path.split('/').filter(Boolean);
+          var isProjectSite = /\.github\.io$/i.test(window.location.hostname) && segments.length > 0;
+          target = isProjectSite ? '/' + segments[0] + '/' : '/';
+        }
+        if (target === path) target = '/';
+        window.location.replace(target + suffix);
+      })();
+    </script>
+    <style>
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; }
+      a { color: #93c5fd; }
+    </style>
+  </head>
+  <body>
+    <p>Redirecting to the House Leaderboard… <a href="/">Continue</a></p>
+  </body>
+</html>
