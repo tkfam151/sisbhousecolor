@@ -183,6 +183,9 @@ function createSupabaseBackend() {
     superArchiveTerm: (superPassword, termName) =>
       rpc('super_admin_archive_term', { p_super_password: superPassword, p_term_name: termName }),
 
+    superResetAll: (superPassword, confirm) =>
+      rpc('super_admin_reset_all', { p_super_password: superPassword, p_confirm: confirm }),
+
     teacherChangeOwnPassword: (teacherId, oldPassword, newPassword) =>
       rpc('teacher_change_own_password', {
         p_teacher_id: teacherId,
@@ -731,6 +734,31 @@ function createLocalBackend() {
         );
         commit(db);
         return archive;
+      });
+    },
+
+    async superResetAll(superPassword, confirm) {
+      return run(async (db) => {
+        await requireSuper(db, superPassword);
+        if (confirm !== 'RESET') throw makeError('Type RESET to confirm');
+        const deletedLogs = db.point_logs.length;
+        const deletedArchives = db.term_archives.length;
+        db.point_logs = [];
+        db.term_archives = [];
+        db.houses.forEach((row) => {
+          row.points = 0;
+        });
+        db.app_config.freeze_leaderboard = false;
+        db.app_config.frozen_snapshot = null;
+        db.app_config.updated_at = nowIso();
+        audit(
+          db,
+          ROLE_LABELS.super_admin,
+          'FULL_RESET',
+          `Reset everything: deleted ${deletedLogs} point logs and ${deletedArchives} archived terms; all houses set to 0.`,
+        );
+        commit(db);
+        return { success: true, deleted_logs: deletedLogs, deleted_archives: deletedArchives };
       });
     },
 

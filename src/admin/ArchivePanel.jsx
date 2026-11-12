@@ -4,8 +4,101 @@ import { HouseEmblem } from '../lib/houses.js';
 import { storage } from '../lib/storage.js';
 import { formatPoints, ordinal } from '../lib/utils.js';
 import { Alert, SectionCard } from '../components/ui.jsx';
-import { ConfirmModal } from '../components/Modal.jsx';
+import Modal, { ConfirmModal } from '../components/Modal.jsx';
 import { ArchiveCard } from '../public/ArchivesDrawer.jsx';
+
+function ResetEverything({ superPassword, onReset, onAuthError }) {
+  const [open, setOpen] = useState(false);
+  const [typed, setTyped] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState(null);
+
+  const close = () => {
+    if (busy) return;
+    setOpen(false);
+    setTyped('');
+  };
+
+  const reset = async () => {
+    setBusy(true);
+    try {
+      const result = await storage.superResetAll(superPassword, typed);
+      setMessage({
+        tone: 'success',
+        text: `Everything has been reset. Deleted ${result.deleted_logs} point log${result.deleted_logs === 1 ? '' : 's'} and ${result.deleted_archives} past term${result.deleted_archives === 1 ? '' : 's'}.`,
+      });
+      setOpen(false);
+      setTyped('');
+      onReset();
+    } catch (err) {
+      if (!onAuthError(err)) setMessage({ tone: 'error', text: err.message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <SectionCard
+      className="lg:col-span-2"
+      title="Reset Everything"
+      description="Deletes all points, every point log and all past terms, and unfreezes the board. Teacher accounts and the audit log are kept. This cannot be undone."
+    >
+      {message && (
+        <Alert tone={message.tone} className="mb-3">
+          {message.text}
+        </Alert>
+      )}
+      <button
+        type="button"
+        className="btn-danger"
+        onClick={() => {
+          setMessage(null);
+          setOpen(true);
+        }}
+      >
+        Reset Everything
+      </button>
+
+      <Modal
+        open={open}
+        onClose={close}
+        title="Reset everything?"
+        tone="danger"
+        labelledBy="reset-title"
+        footer={
+          <>
+            <button type="button" className="btn-secondary" onClick={close} disabled={busy}>
+              Cancel
+            </button>
+            <button type="button" className="btn-danger" onClick={reset} disabled={busy || typed !== 'RESET'}>
+              {busy ? 'Resetting…' : 'Reset Everything'}
+            </button>
+          </>
+        }
+      >
+        <p>
+          All five houses go back to <strong>0 points</strong>, and <strong>every point log and every past term</strong> is permanently
+          deleted.
+        </p>
+        <label htmlFor="reset-confirm" className="label mt-4">
+          Type <strong className="text-ink">RESET</strong> to confirm
+        </label>
+        <input
+          id="reset-confirm"
+          data-autofocus
+          className="input"
+          autoComplete="off"
+          autoCapitalize="characters"
+          value={typed}
+          onChange={(e) => setTyped(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && typed === 'RESET' && !busy) reset();
+          }}
+        />
+      </Modal>
+    </SectionCard>
+  );
+}
 
 export default function ArchivePanel({ superPassword, ranked, archives, frozen, onArchived, onAuthError }) {
   const [termName, setTermName] = useState('');
@@ -97,6 +190,8 @@ export default function ArchivePanel({ superPassword, ranked, archives, frozen, 
           </div>
         )}
       </SectionCard>
+
+      <ResetEverything superPassword={superPassword} onReset={onArchived} onAuthError={onAuthError} />
 
       <ConfirmModal
         open={confirming}

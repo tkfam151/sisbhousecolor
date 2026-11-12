@@ -11,6 +11,7 @@ const ACTION_STYLES = {
   FREEZE_ON: 'bg-violet-100 text-violet-800',
   FREEZE_OFF: 'bg-violet-100 text-violet-800',
   TERM_ARCHIVED: 'bg-blue-100 text-blue-800',
+  FULL_RESET: 'bg-red-100 text-red-800',
   SECURITY_UPDATED: 'bg-fuchsia-100 text-fuchsia-800',
   PASSWORD_CHANGED: 'bg-fuchsia-100 text-fuchsia-800',
   TEACHER_CREATED: 'bg-emerald-100 text-emerald-800',

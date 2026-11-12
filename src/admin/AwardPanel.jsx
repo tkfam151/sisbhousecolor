@@ -6,15 +6,6 @@ import { formatPoints, signed, timeAgo } from '../lib/utils.js';
 import { Alert, SectionCard } from '../components/ui.jsx';
 import { ConfirmModal } from '../components/Modal.jsx';
 
-export const PRESETS = [
-  { label: '1st Place', points: 50, category: 'Sports' },
-  { label: '2nd Place', points: 30, category: 'Sports' },
-  { label: '3rd Place', points: 20, category: 'Sports' },
-  { label: 'Academic Excellence', points: 15, category: 'Academics' },
-  { label: 'Sportsmanship', points: 10, category: 'Spirit' },
-  { label: 'House Spirit', points: 5, category: 'Spirit' },
-];
-
 const LARGE_ENTRY = 999;
 
 export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuthError }) {
@@ -24,7 +15,6 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
   const [points, setPoints] = useState('');
   const [category, setCategory] = useState('Spirit');
   const [reason, setReason] = useState('');
-  const [activePreset, setActivePreset] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [confirming, setConfirming] = useState(null);
@@ -32,15 +22,6 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
   const house = houseId ? getHouse(houseId) : null;
   const pointsByHouse = useMemo(() => Object.fromEntries(houses.map((h) => [h.id, h.points])), [houses]);
   const myRecent = useMemo(() => logs.slice(0, 6), [logs]);
-
-  const applyPreset = (preset) => {
-    setDirection('award');
-    setPoints(String(preset.points));
-    setCategory(preset.category);
-    setReason(preset.label);
-    setActivePreset(preset.label);
-    setError(null);
-  };
 
   const signedValue = () => {
     const n = Number(points);
@@ -65,7 +46,6 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
       onAwarded(result, getHouse(houseId), value);
       setPoints('');
       setReason('');
-      setActivePreset(null);
       setDirection('award');
     } catch (err) {
       if (!onAuthError(err)) setError(err.message);
@@ -93,7 +73,6 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
   const step = (delta) => {
     const n = Math.max(0, (Number(points) || 0) + delta);
     setPoints(n ? String(n) : '');
-    setActivePreset(null);
   };
 
   const preview = Number(points) > 0 && house ? signedValue() : null;
@@ -146,32 +125,10 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
             </div>
           </fieldset>
 
-          <fieldset>
-            <legend className="label">2. Quick presets</legend>
-            <div className="flex flex-wrap gap-2">
-              {PRESETS.map((preset) => {
-                const active = activePreset === preset.label;
-                return (
-                  <button
-                    key={preset.label}
-                    type="button"
-                    onClick={() => applyPreset(preset)}
-                    aria-pressed={active}
-                    className={`rounded-xl px-3 py-2 text-sm font-semibold ring-1 transition active:scale-95 ${
-                      active ? 'bg-ink text-white ring-ink' : 'bg-white text-neutral-700 ring-neutral-300 hover:bg-neutral-50'
-                    }`}
-                  >
-                    {preset.label} (+{preset.points} · {preset.category})
-                  </button>
-                );
-              })}
-            </div>
-          </fieldset>
-
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label htmlFor="points" className="label">
-                3. Points
+                2. Points
               </label>
               {isAdmin && (
                 <div className="mb-2 inline-flex rounded-xl bg-neutral-100 p-1 text-sm" role="group" aria-label="Award or deduct">
@@ -185,7 +142,6 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
                       aria-pressed={direction === key}
                       onClick={() => {
                         setDirection(key);
-                        setActivePreset(null);
                       }}
                       className={`rounded-lg px-3 py-1.5 font-semibold transition ${
                         direction === key
@@ -215,7 +171,6 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
                   value={points}
                   onChange={(e) => {
                     setPoints(e.target.value.replace(/[^\d]/g, ''));
-                    setActivePreset(null);
                   }}
                 />
                 <button type="button" className="btn-secondary px-3" onClick={() => step(5)} aria-label="Increase by 5">
@@ -225,7 +180,7 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
             </div>
 
             <fieldset>
-              <legend className="label">4. Category</legend>
+              <legend className="label">3. Category</legend>
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map((c) => (
                   <button
@@ -246,7 +201,7 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
 
           <div>
             <label htmlFor="reason" className="label">
-              5. Reason <span className="font-normal text-neutral-400">(optional)</span>
+              4. Reason <span className="font-normal text-neutral-400">(optional)</span>
             </label>
             <input
               id="reason"
@@ -256,7 +211,6 @@ export default function AwardPanel({ auth, role, houses, logs, onAwarded, onAuth
               value={reason}
               onChange={(e) => {
                 setReason(e.target.value);
-                setActivePreset(null);
               }}
             />
           </div>

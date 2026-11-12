@@ -14,12 +14,13 @@ With no Supabase credentials the app runs fully in **offline mode** using `local
 ## Features
 
 - **Roles** — Super Admin (`sisbadmin`), General Admin (shared password), Teachers (individual accounts). Every permission is enforced inside PostgreSQL `SECURITY DEFINER` functions, not just in the UI.
-- **One-tap presets** — 1st Place (+50 · Sports), 2nd Place (+30), 3rd Place (+20), Academic Excellence (+15 · Academics), Sportsmanship (+10 · Spirit), House Spirit (+5 · Spirit), plus custom points, category and reason.
+- **Quick awards** — pick a house, enter points, choose a category (Sports, Academics, Spirit, Other) and add an optional reason.
 - **Typo guardrail** — any entry above 999 points needs confirmation.
 - **60-second Undo** banner after every award.
 - **Mystery / Freeze Mode** — public screens show a frozen snapshot while points keep being counted; switching it off reveals the real standings everywhere, with confetti.
 - **TV / Projector Mode** — full-screen, high-contrast assembly view with house-coloured confetti and a 6-second toast for every new award.
 - **Archive & Start New Term** — saves the final standings and champion, resets all houses to 0.
+- **Reset Everything** (Super Admin) — wipes all points, point logs and past terms after typing `RESET`. Teacher accounts and the audit log are kept.
 - **Teacher management** — single create, bulk CSV paste import, activate/deactivate, password reset, optional teacher self-service password change.
 - **Append-only audit log** and **CSV export** (`sisb-house-points-YYYY-MM-DD.csv`).
 
@@ -116,6 +117,7 @@ In offline mode, clear the site's localStorage to reset everything to the defaul
 | Create / import / manage teachers | — | — | ✅ |
 | Change General Admin password, toggle teacher self-service | — | — | ✅ |
 | Archive & start new term | — | — | ✅ |
+| Reset everything (points, logs, past terms) | — | — | ✅ |
 | View audit log | — | — | ✅ |
 | Change own password | if enabled | — | — |
 

@@ -803,6 +803,40 @@ begin
 end;
 $$;
 
+create or replace function public.super_admin_reset_all(p_super_password text, p_confirm text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+declare
+  v_logs     int;
+  v_archives int;
+begin
+  perform public._require_super(p_super_password);
+  if coalesce(p_confirm, '') <> 'RESET' then
+    raise exception 'Type RESET to confirm';
+  end if;
+
+  perform 1 from public.houses for update;
+
+  delete from public.point_logs where id is not null;
+  get diagnostics v_logs = row_count;
+  delete from public.term_archives where id is not null;
+  get diagnostics v_archives = row_count;
+
+  update public.houses set points = 0 where id is not null;
+  update public.app_config
+     set freeze_leaderboard = false, frozen_snapshot = null, updated_at = now()
+   where id = 1;
+
+  perform public._audit('Super Admin (sisbadmin)', 'FULL_RESET',
+    format('Reset everything: deleted %s point logs and %s archived terms; all houses set to 0.', v_logs, v_archives));
+
+  return jsonb_build_object('success', true, 'deleted_logs', v_logs, 'deleted_archives', v_archives);
+end;
+$$;
+
 -- -----------------------------------------------------------------------------
 --  Teacher self-service
 -- -----------------------------------------------------------------------------
@@ -866,6 +900,7 @@ grant execute on function public.super_admin_bulk_create_teachers(text, jsonb)  
 grant execute on function public.super_admin_manage_teacher(text, uuid, boolean, text)      to anon, authenticated;
 grant execute on function public.super_admin_update_security(text, text, boolean)           to anon, authenticated;
 grant execute on function public.super_admin_archive_term(text, text)                       to anon, authenticated;
+grant execute on function public.super_admin_reset_all(text, text)                          to anon, authenticated;
 grant execute on function public.teacher_change_own_password(uuid, text, text)              to anon, authenticated;
 
 -- Ask PostgREST to pick up the new / changed functions immediately.
